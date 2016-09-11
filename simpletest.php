@@ -1,8 +1,9 @@
 <?php
 
 if(isset($_GET['redirect'])){
-
-	echo 'kjsnfskjenejnf';
+	$redir = $_GET['redirect'];
+	header("HTTP/1.1 301 Moved Permanently"); 
+	header("Location: ".$redir);
 }
 
 if(isset($_GET['m'])){
