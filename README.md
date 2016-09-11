@@ -1,5 +1,5 @@
 # parameth
-This tool can be used to brute force GET and POST parameters
+This tool can be used to brute discover GET and POST parameters
 
 Often when you are directory busting a directory for common files, 
 you can identify scripts (for example test.php) that look like they need
