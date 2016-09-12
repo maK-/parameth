@@ -80,11 +80,11 @@ def requestor(url, parameter, header, agent, variance):
 					print '->' +str(len(p.content))+ ' ( '+url+' )'
 
 		except requests.exceptions.Timeout:
-			print 'Request Timed out!'
+			print 'Request Timed out on parameter "'+i+'"'
 		except requests.exceptions.ConnectionError:
-			print 'Connection Error!'
+			print 'Connection Error on parameter "'+i+'"'
 		except requests.exceptions.TooManyRedirects:
-			print 'Redirect loop!'		
+			print 'Redirect loop on parameter "'+i+'"'		
 	
 
 #Ideas for Dynamic content: 
