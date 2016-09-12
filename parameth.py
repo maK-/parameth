@@ -136,7 +136,7 @@ if __name__ == '__main__':
 						help='Add a custom header to the requests')
 	parse.add_argument('-a', '--agent', type=str, default='parameth v1.0',
 						help='Specify a user agent')
-	parse.add_argument('-t', '--threads', type=int, default='3',
+	parse.add_argument('-t', '--threads', type=int, default='2',
 						help='Specify the number of threads.')
 	parse.add_argument('-o', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
