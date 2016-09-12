@@ -130,7 +130,7 @@ if __name__ == '__main__':
 	parse.add_argument('-v', '--version', action='store_true', default=False,
 						help='Version Information')
 	parse.add_argument('-u', '--url', type=str, default='', help='Target URL')
-	parse.add_argument('-p', '--params', type=str, default='list.txt',
+	parse.add_argument('-p', '--params', type=str, default='lists/all.txt',
 						help='Provide a list of parameters to scan for')
 	parse.add_argument('-H', '--header', type=str, default='', 
 						help='Add a custom header to the requests')
