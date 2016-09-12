@@ -36,7 +36,7 @@ def getHeaderObj(header):
 def split_params(u, t):
 	return array_split(u, t)
 
-def requestor(url, parameter, header, agent):
+def requestor(url, parameter, header, agent, variance):
 	headers = {}
 	post = {}
 	if ':' in header:
@@ -54,23 +54,31 @@ def requestor(url, parameter, header, agent):
 			#GET parameter
 			g = requests.get(newrl, timeout=10, headers=header, 
 				allow_redirects=False, verify=False)
+			plusvar = len(g.content) + variance
+			subvar = len(g.content) - variance
+
 			if g.status_code != BASE_GETstatus:
 				print '\033[032mGET(status)\033[0m: '+i+' | '+str(BASE_GETstatus)+'->'+str(g.status_code),
 				print ' ( '+newrl+' )'
 			if len(g.content) != BASE_GETresponseSize:
-				print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
-				print '->' +str(len(g.content))+ ' ( '+newrl+' )'
+				if len(g.content) >= plusvar or len(g.content) <= subvar:
+					print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
+					print '->' +str(len(g.content))+ ' ( '+newrl+' )'
 			
 			#POST parameter
 			p = requests.post(url, timeout=10, headers=header, data=post,
 				allow_redirects=False, verify=False)
+			plusvar = len(p.content) + variance
+			subvar = len(p.content) - variance
+
 			if p.status_code != BASE_POSTstatus:
 				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->'+str(p.status_code),
 				print ' ( '+url+' )'
 			if len(p.content) != BASE_POSTresponseSize:
-				print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
-				print '->' +str(len(p.content))+ ' ( '+url+' )'
-			
+				if len(p.content) >= plusvar or len(p.content) <= subvar:
+					print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
+					print '->' +str(len(p.content))+ ' ( '+url+' )'
+
 		except requests.exceptions.Timeout:
 			print 'Request Timed out!'
 		except requests.exceptions.ConnectionError:
@@ -130,6 +138,8 @@ if __name__ == '__main__':
 						help='Specify a user agent')
 	parse.add_argument('-t', '--threads', type=int, default='3',
 						help='Specify the number of threads.')
+	parse.add_argument('-o', '--variance', type=int, default='0',
+						help='The offset in difference to ignore (if dynamic pages)')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -152,7 +162,7 @@ if __name__ == '__main__':
 		splitlist = list(split_params(params, args.threads))
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
-				splitlist[i], args.header, args.agent))
+				splitlist[i], args.header, args.agent, args.variance))
 			threads.append(p)
 		try:
 			for p in threads:
