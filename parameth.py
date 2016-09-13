@@ -149,7 +149,7 @@ if __name__ == '__main__':
 	parse.add_argument('-o', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
 	parse.add_argument('-P', '--proxy', type=str, default='',
-						help='Specify a proxy in the form [IP]:[PORT]')
+						help='Specify a proxy in the form http|s://[IP]:[PORT]')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
