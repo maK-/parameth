@@ -36,7 +36,13 @@ def getHeaderObj(header):
 def split_params(u, t):
 	return array_split(u, t)
 
-def requestor(url, parameter, header, agent, variance, proxy):
+def statusMatch(ignore, status_code):
+	if status_code in ignore:
+		return False
+	else:
+		return True
+
+def requestor(url, parameter, header, agent, variance, proxy, ignore):
 	headers = {}
 	post = {}
 	proxies = {}
@@ -60,13 +66,15 @@ def requestor(url, parameter, header, agent, variance, proxy):
 			plusvar = len(g.content) + variance
 			subvar = len(g.content) - variance
 
-			if g.status_code != BASE_GETstatus:
-				print '\033[032mGET(status)\033[0m: '+i+' | '+str(BASE_GETstatus)+'->'+str(g.status_code),
-				print ' ( '+newrl+' )'
-			if len(g.content) != BASE_GETresponseSize:
-				if len(g.content) >= plusvar or len(g.content) <= subvar:
-					print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
-					print '->' +str(len(g.content))+ ' ( '+newrl+' )'
+			if g.status_code != BASE_GETstatus and statusMatch(ignore, str(g.status_code)):
+				print '\033[032mGET(status)\033[0m: '+i+' | '+str(BASE_GETstatus)+'->',
+				print str(g.status_code)+' ( '+newrl+' )'
+			
+			if statusMatch(ignore, str(g.status_code)):
+				if len(g.content) != BASE_GETresponseSize:
+					if len(g.content) >= plusvar or len(g.content) <= subvar:
+						print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
+						print '->' +str(len(g.content))+ ' ( '+newrl+' )'
 			
 			#POST parameter
 			p = requests.post(url, timeout=10, headers=header, data=post,
@@ -74,13 +82,15 @@ def requestor(url, parameter, header, agent, variance, proxy):
 			plusvar = len(p.content) + variance
 			subvar = len(p.content) - variance
 
-			if p.status_code != BASE_POSTstatus:
-				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->'+str(p.status_code),
-				print ' ( '+url+' )'
-			if len(p.content) != BASE_POSTresponseSize:
-				if len(p.content) >= plusvar or len(p.content) <= subvar:
-					print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
-					print '->' +str(len(p.content))+ ' ( '+url+' )'
+			if p.status_code != BASE_POSTstatus and statusMatch(ignore, str(g.status_code)):
+				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->',
+				print str(p.status_code)+' ( '+url+' )'
+			
+			if statusMatch(ignore, str(g.status_code)):
+				if len(p.content) != BASE_POSTresponseSize:
+					if len(p.content) >= plusvar or len(p.content) <= subvar:
+						print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
+						print '->' +str(len(p.content))+ ' ( '+url+' )'
 
 		except requests.exceptions.Timeout:
 			print 'Request Timed out on parameter "'+i+'"'
@@ -90,9 +100,6 @@ def requestor(url, parameter, header, agent, variance, proxy):
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-#Ideas for Dynamic content: 
-#get average diff of response size and check if outside range
-#calculate size after urls removed (in case of index?[param]= in href)
 def getBase(url, header, agent, proxy):
 	headers = {}
 	proxies = {}
@@ -150,6 +157,8 @@ if __name__ == '__main__':
 						help='The offset in difference to ignore (if dynamic pages)')
 	parse.add_argument('-P', '--proxy', type=str, default='',
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
+	parse.add_argument('-x', '--ignore', type=str, default='',
+						help='Specify a status to ignore eg. 404,302...')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -172,7 +181,8 @@ if __name__ == '__main__':
 		splitlist = list(split_params(params, args.threads))
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
-				splitlist[i], args.header, args.agent, args.variance, args.proxy))
+				splitlist[i], args.header, args.agent, args.variance, 
+				args.proxy, args.ignore))
 			threads.append(p)
 		try:
 			for p in threads:
