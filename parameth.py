@@ -43,7 +43,7 @@ def requestor(url, parameter, header, agent, variance, proxy):
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
-	if ':' in url:
+	if ':' in proxy:
 		proxies = getHeaderObj(proxy)
 	for i in parameter:
 		newrl = url
@@ -104,7 +104,7 @@ def getBase(url, header, agent, proxy):
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
-	if ':' in url:
+	if ':' in proxy:
 		proxies = getHeaderObj(proxy)
 	print 'Establishing base figures...'
 	try:
