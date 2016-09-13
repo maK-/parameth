@@ -20,10 +20,6 @@ but at least it's a start
 
 The following regexes might be useful to parse `$_GET` or `$_POST` parameters from source:
 
-```
-$> grep -rioP '\$_POST\[\s*["\']\s*\w+\s*["\']\s*\]' PHPSOURCE  | grep -oP '\$_POST\[\s*["\']\s*\w+\s*["\']\s*\]' | sed -e "s/\$_POST\[\s*[\"']//g"  -e "s/\s*['\"]\s*\]//g" | sort -u > /tmp/outfile.txt 
-```
+> $> grep -rioP '\$_POST\[\s*["\']\s*\w+\s*["\']\s*\]' PHPSOURCE  | grep -oP '\$_POST\[\s*["\']\s*\w+\s*["\']\s*\]' | sed -e "s/\$_POST\[\s*[\"']//g"  -e "s/\s*['\"]\s*\]//g" | sort -u > /tmp/outfile.txt 
 
-```
-$> grep -rioP '\$_GET\[\s*["\']\s*\w+\s*["\']\s*\]' PHPSOURCE  | grep -oP '\$_GET\[\s*["\']\s*\w+\s*["\']\s*\]' | sed -e "s/\$_GET\[\s*[\"']//g"  -e "s/\s*['\"]\s*\]//g" | sort -u > /tmp/outfile.txt
-```
+> $> grep -rioP '\$_GET\[\s*["\']\s*\w+\s*["\']\s*\]' PHPSOURCE  | grep -oP '\$_GET\[\s*["\']\s*\w+\s*["\']\s*\]' | sed -e "s/\$_GET\[\s*[\"']//g"  -e "s/\s*['\"]\s*\]//g" | sort -u > /tmp/outfile.txt
