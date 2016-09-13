@@ -36,12 +36,15 @@ def getHeaderObj(header):
 def split_params(u, t):
 	return array_split(u, t)
 
-def requestor(url, parameter, header, agent, variance):
+def requestor(url, parameter, header, agent, variance, proxy):
 	headers = {}
 	post = {}
+	proxies = {}
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
+	if ':' in url:
+		proxies = getHeaderObj(proxy)
 	for i in parameter:
 		newrl = url
 		post = {}
@@ -53,7 +56,7 @@ def requestor(url, parameter, header, agent, variance):
 		try:	 
 			#GET parameter
 			g = requests.get(newrl, timeout=10, headers=header, 
-				allow_redirects=False, verify=False)
+				allow_redirects=False, verify=False, proxies=proxies)
 			plusvar = len(g.content) + variance
 			subvar = len(g.content) - variance
 
@@ -67,7 +70,7 @@ def requestor(url, parameter, header, agent, variance):
 			
 			#POST parameter
 			p = requests.post(url, timeout=10, headers=header, data=post,
-				allow_redirects=False, verify=False)
+				allow_redirects=False, verify=False, proxies=proxies)
 			plusvar = len(p.content) + variance
 			subvar = len(p.content) - variance
 
@@ -90,8 +93,9 @@ def requestor(url, parameter, header, agent, variance):
 #Ideas for Dynamic content: 
 #get average diff of response size and check if outside range
 #calculate size after urls removed (in case of index?[param]= in href)
-def getBase(url, header, agent):
+def getBase(url, header, agent, proxy):
 	headers = {}
+	proxies = {}
 	global BASE_GETstatus
 	global BASE_GETresponseSize	
 	global BASE_POSTstatus
@@ -100,15 +104,19 @@ def getBase(url, header, agent):
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
+	if ':' in url:
+		proxies = getHeaderObj(proxy)
 	print 'Establishing base figures...'
 	try:
-		g = requests.get(url, timeout=10, headers=headers, verify=False)
+		g = requests.get(url, timeout=10, headers=headers, verify=False,
+							proxies=proxies)
 		BASE_GETstatus = g.status_code
 		BASE_GETresponseSize = len(g.content)
 		print '\033[031mGET: content-length-> '+str(len(g.content)),
 		print ' status-> '+str(g.status_code)+'\033[0m'
 	
-		p = requests.post(url, timeout=10, headers=headers, verify=False)
+		p = requests.post(url, timeout=10, headers=headers, verify=False,
+							proxies=proxies)
 		BASE_POSTstatus = p.status_code
 		BASE_POSTresponseSize = len(p.content)
 		print '\033[031mPOST: content-length-> '+str(len(p.content)),
@@ -140,6 +148,8 @@ if __name__ == '__main__':
 						help='Specify the number of threads.')
 	parse.add_argument('-o', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
+	parse.add_argument('-P', '--proxy', type=str, default='',
+						help='Specify a proxy in the form [IP]:[PORT]')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -151,7 +161,7 @@ if __name__ == '__main__':
 
 	if args.url:
 		version_info()
-		getBase(args.url, args.header, args.agent)
+		getBase(args.url, args.header, args.agent, args.proxy)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
@@ -162,7 +172,7 @@ if __name__ == '__main__':
 		splitlist = list(split_params(params, args.threads))
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
-				splitlist[i], args.header, args.agent, args.variance))
+				splitlist[i], args.header, args.agent, args.variance, args.proxy))
 			threads.append(p)
 		try:
 			for p in threads:
