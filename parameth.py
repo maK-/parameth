@@ -86,7 +86,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore):
 				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->',
 				print str(p.status_code)+' ( '+url+' )'
 			
-			if statusMatch(ignore, str(g.status_code)):
+			if statusMatch(ignore, str(p.status_code)):
 				if len(p.content) != BASE_POSTresponseSize:
 					if len(p.content) >= plusvar or len(p.content) <= subvar:
 						print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
