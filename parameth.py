@@ -82,7 +82,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore):
 			plusvar = len(p.content) + variance
 			subvar = len(p.content) - variance
 
-			if p.status_code != BASE_POSTstatus and statusMatch(ignore, str(g.status_code)):
+			if p.status_code != BASE_POSTstatus and statusMatch(ignore, str(p.status_code)):
 				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->',
 				print str(p.status_code)+' ( '+url+' )'
 			
