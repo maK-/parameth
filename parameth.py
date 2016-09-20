@@ -70,7 +70,12 @@ def statusMatch(ignore, status_code):
 	else:
 		return True
 
-def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
+def printOut(filename, string):
+	f = open(filename,'a')
+	f.write(string+'\n')
+	f.close()
+
+def requestor(url, parameter, header, agent, variance, proxy, ignore, data, out):
 	headers = {}
 	post = {}
 	proxies = {}
@@ -84,6 +89,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
 	
 	for i in parameter:
 		newrl = url
+		strvar = ''
 		post = {}
 		post[i] = BASE_paramValue
 		if '?' in url:
@@ -101,12 +107,18 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
 			if g.status_code != BASE_GETstatus and statusMatch(ignore, str(g.status_code)):
 				print '\033[032mGET(status)\033[0m: '+i+' | '+str(BASE_GETstatus)+'->',
 				print str(g.status_code)+' ( '+newrl+' )'
+				if out != 'out':
+					strvar = 'GET(status) '+i+' '+str(g.status_code)+' '+newrl
+					printOut(out, strvar)
 			
 			if statusMatch(ignore, str(g.status_code)):
 				if len(g.content) != BASE_GETresponseSize:
 					if len(g.content) >= plusvar or len(g.content) <= subvar:
 						print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
 						print '->' +str(len(g.content))+ ' ( '+newrl+' )'
+						if out != 'out':
+							strvar = 'GET(size) '+i+' '+str(len(g.content))+' '+newrl
+							printOut(out, strvar)
 			
 			#POST parameter
 			p = requests.post(url, timeout=10, headers=header, data=post,
@@ -117,12 +129,18 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
 			if p.status_code != BASE_POSTstatus and statusMatch(ignore, str(p.status_code)):
 				print '\033[032mPOST(status)\033[0m: '+i+' | '+str(BASE_POSTstatus)+'->',
 				print str(p.status_code)+' ( '+url+' )'
+				if out != 'out':
+					strvar = 'POST(status) '+i+' '+str(p.status_code)+' '+url
+					printOut(out, strvar)
 			
 			if statusMatch(ignore, str(p.status_code)):
 				if len(p.content) != BASE_POSTresponseSize:
 					if len(p.content) >= plusvar or len(p.content) <= subvar:
 						print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
 						print '->' +str(len(p.content))+ ' ( '+url+' )'
+						if out != 'out':
+							strvar = 'POST(size) '+i+' '+str(p.status_code)+' '+url
+							printOut(out, strvar)
 
 		except requests.exceptions.Timeout:
 			print 'Request Timed out on parameter "'+i+'"'
@@ -201,6 +219,7 @@ if __name__ == '__main__':
 						help='Specify the number of threads.')
 	parse.add_argument('-off', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
+	parse.add_argument('-o', '--out', type=str, default='out',help='Specify output file')
 	parse.add_argument('-P', '--proxy', type=str, default='',
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
 	parse.add_argument('-x', '--ignore', type=str, default='',
@@ -231,7 +250,7 @@ if __name__ == '__main__':
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
-				args.proxy, args.ignore, args.data))
+				args.proxy, args.ignore, args.data, args.out))
 			threads.append(p)
 		try:
 			for p in threads:
