@@ -139,7 +139,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data, out)
 						print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
 						print '->' +str(len(p.content))+ ' ( '+url+' )'
 						if out != 'out':
-							strvar = 'POST(size) '+i+' '+str(p.status_code)+' '+url
+							strvar = 'POST(size) '+i+' '+str(len(p.content))+' '+url
 							printOut(out, strvar)
 
 		except requests.exceptions.Timeout:
