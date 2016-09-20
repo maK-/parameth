@@ -42,6 +42,8 @@ so for example, if you were getting alternating response sizes of 4444 and
 
 >  -x IGNORE, --ignore IGNORE           **Specify a status to ignore eg. 404,302...**
 
+> -s SIZEIGNORE, --sizeignore SIZEIGNORE **Ignore responses of specified size**
+
 >  -d DATA, --data DATA                 **Provide default post data (also taken from provided url after ?)**
 
 
