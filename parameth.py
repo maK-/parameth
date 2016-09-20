@@ -132,7 +132,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-def getBase(url, header, agent, proxy, data):
+def getBase(url, header, agent, variance, proxy, data):
 	headers = {}
 	proxies = {}
 	get = ''
@@ -159,20 +159,21 @@ def getBase(url, header, agent, proxy, data):
 		BASE_POSTdata.update(getParamObj(data))
 	print 'Establishing base figures...'
 	print '\033[031mPOST data: \033[0m'+getParamStr(BASE_POSTdata)
+	print '\033[031mOffset value: \033[0m'+str(variance)
 	try:
 		g = requests.get(url, timeout=10, headers=headers, verify=False,
 							allow_redirects=False, proxies=proxies)
 		BASE_GETstatus = g.status_code
 		BASE_GETresponseSize = len(g.content)
-		print '\033[031mGET: content-length-> '+str(len(g.content)),
-		print ' status-> '+str(g.status_code)+'\033[0m'
+		print '\033[031mGET: content-length->\033[0m '+str(len(g.content)),
+		print '\033[031m status->\033[0m '+str(g.status_code)
 	
 		p = requests.post(url_base, timeout=10, headers=headers, verify=False,
 							allow_redirects=False, proxies=proxies, data=BASE_POSTdata)
 		BASE_POSTstatus = p.status_code
 		BASE_POSTresponseSize = len(p.content)
-		print '\033[031mPOST: content-length-> '+str(len(p.content)),
-		print ' status-> '+str(p.status_code)+'\033[0m'
+		print '\033[031mPOST: content-length->\033[0m '+str(len(p.content)),
+		print '\033[031m status->\033[0m '+str(p.status_code)
 		
 		if BASE_POSTstatus != BASE_GETstatus:
 			print 'POST and GET are different sizes'
@@ -198,7 +199,7 @@ if __name__ == '__main__':
 						help='Specify a user agent')
 	parse.add_argument('-t', '--threads', type=int, default='2',
 						help='Specify the number of threads.')
-	parse.add_argument('-o', '--variance', type=int, default='0',
+	parse.add_argument('-off', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
 	parse.add_argument('-P', '--proxy', type=str, default='',
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
@@ -217,7 +218,8 @@ if __name__ == '__main__':
 
 	if args.url:
 		version_info()
-		getBase(args.url, args.header, args.agent, args.proxy, args.data)
+		getBase(args.url, args.header, args.agent, args.variance, args.proxy, 
+				args.data)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
