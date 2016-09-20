@@ -75,7 +75,8 @@ def printOut(filename, string):
 	f.write(string+'\n')
 	f.close()
 
-def requestor(url, parameter, header, agent, variance, proxy, ignore, data, out):
+def requestor(url, parameter, header, agent, variance, proxy, 
+				ignore, data, out, size):
 	headers = {}
 	post = {}
 	proxies = {}
@@ -112,7 +113,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data, out)
 					printOut(out, strvar)
 			
 			if statusMatch(ignore, str(g.status_code)):
-				if len(g.content) != BASE_GETresponseSize:
+				if len(g.content) != BASE_GETresponseSize and len(g.content) != size:
 					if len(g.content) >= plusvar or len(g.content) <= subvar:
 						print '\033[032mGET(size)\033[0m: '+i+' | '+str(BASE_GETresponseSize),
 						print '->' +str(len(g.content))+ ' ( '+newrl+' )'
@@ -134,7 +135,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore, data, out)
 					printOut(out, strvar)
 			
 			if statusMatch(ignore, str(p.status_code)):
-				if len(p.content) != BASE_POSTresponseSize:
+				if len(p.content) != BASE_POSTresponseSize and len(p.content) != size:
 					if len(p.content) >= plusvar or len(p.content) <= subvar:
 						print '\033[032mPOST(size)\033[0m: '+i+' | '+str(BASE_POSTresponseSize),
 						print '->' +str(len(p.content))+ ' ( '+url+' )'
@@ -224,6 +225,8 @@ if __name__ == '__main__':
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
 	parse.add_argument('-x', '--ignore', type=str, default='',
 						help='Specify a status to ignore eg. 404,302...')
+	parse.add_argument('-s', '--sizeignore', type=int, default='-1', 
+						help='Ignore responses of specified size')
 	parse.add_argument('-d', '--data', type=str, default='', 
 						help='Provide default post data (also taken from provided url after ?)')
 	args = parse.parse_args()
@@ -250,7 +253,7 @@ if __name__ == '__main__':
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
-				args.proxy, args.ignore, args.data, args.out))
+				args.proxy, args.ignore, args.data, args.out, args.sizeignore))
 			threads.append(p)
 		try:
 			for p in threads:
