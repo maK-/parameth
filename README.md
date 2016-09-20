@@ -12,9 +12,39 @@ so for example, if you were getting alternating response sizes of 4444 and
 4448, set the offset to 5 and it will only show the stuff outside the norm
 
 
-***NOTE:***
-I will develop this further to account for dynamic pages etc., 
-but at least it's a start
+#Usage
+
+>***usage: parameth.py [-h] [-v] [-u URL] [-p PARAMS] [-H HEADER] [-a AGENT]
+>                   [-t THREADS] [-off VARIANCE] [-o OUT] [-P PROXY]
+>                   [-x IGNORE] [-d DATA]***
+
+>**optional arguments:**
+
+>  -h, --help                           show this help message and exit
+
+>  -v, --version                        Version Information
+
+>  -u URL, --url URL                    Target URL
+
+>  -p PARAMS, --params PARAMS           Provide a list of parameters to scan for
+
+>  -H HEADER, --header HEADER           Add a custom header to the requests
+
+>  -a AGENT, --agent AGENT              Specify a user agent
+
+>  -t THREADS, --threads THREADS        Specify the number of threads.
+
+>  -off VARIANCE, --variance VARIANCE   The offset in difference to ignore (if dynamic pages)
+
+>  -o OUT, --out OUT                    Specify output file
+
+>  -P PROXY, --proxy PROXY              Specify a proxy in the form http|s://[IP]:[PORT]
+
+>  -x IGNORE, --ignore IGNORE           Specify a status to ignore eg. 404,302...
+
+>  -d DATA, --data DATA                 Provide default post data (also taken from provided url after ?)
+
+
 
 # Adding new params from source:
 
