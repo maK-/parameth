@@ -20,29 +20,29 @@ so for example, if you were getting alternating response sizes of 4444 and
 
 >**optional arguments:**
 
->  -h, --help                           show this help message and exit
+>  -h, --help                           **show this help message and exit**
 
->  -v, --version                        Version Information
+>  -v, --version                        **Version Information**
 
->  -u URL, --url URL                    Target URL
+>  -u URL, --url URL                    **Target URL**
 
->  -p PARAMS, --params PARAMS           Provide a list of parameters to scan for
+>  -p PARAMS, --params PARAMS           **Provide a list of parameters to scan for**
 
->  -H HEADER, --header HEADER           Add a custom header to the requests
+>  -H HEADER, --header HEADER           **Add a custom header to the requests**
 
->  -a AGENT, --agent AGENT              Specify a user agent
+>  -a AGENT, --agent AGENT              **Specify a user agent**
 
->  -t THREADS, --threads THREADS        Specify the number of threads.
+>  -t THREADS, --threads THREADS        **Specify the number of threads.**
 
->  -off VARIANCE, --variance VARIANCE   The offset in difference to ignore (if dynamic pages)
+>  -off VARIANCE, --variance VARIANCE   **The offset in difference to ignore (if dynamic pages)**
 
->  -o OUT, --out OUT                    Specify output file
+>  -o OUT, --out OUT                    **Specify output file**
 
->  -P PROXY, --proxy PROXY              Specify a proxy in the form http|s://[IP]:[PORT]
+>  -P PROXY, --proxy PROXY              **Specify a proxy in the form http|s://[IP]:[PORT]**
 
->  -x IGNORE, --ignore IGNORE           Specify a status to ignore eg. 404,302...
+>  -x IGNORE, --ignore IGNORE           **Specify a status to ignore eg. 404,302...**
 
->  -d DATA, --data DATA                 Provide default post data (also taken from provided url after ?)
+>  -d DATA, --data DATA                 **Provide default post data (also taken from provided url after ?)**
 
 
 
