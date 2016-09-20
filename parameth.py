@@ -12,6 +12,7 @@ BASE_GETstatus = 0
 BASE_GETresponseSize = 0
 BASE_POSTstatus = 0
 BASE_POSTresponseSize = 0
+BASE_POSTdata = {}
 BASE_paramValue = 'discobiscuits'
 
 def version_info():
@@ -33,6 +34,33 @@ def getHeaderObj(header):
 	h2 = {h1:h3}
 	return h2
 
+def getParamObj(data):
+	newParam = ''
+	newValue = ''
+	params = []
+	requestData = {}
+	if data.startswith('?'):
+		newParam = data[1:]
+	else:
+		newParam = data
+	if len(data) != 0:
+		params = string.split(newParam, '&')
+		for i in params:
+			newParam = string.split(i, '=')[0]	
+			newValue = string.split(i, '=')[1]
+			requestData[newParam] = newValue
+		return requestData
+	else:
+		return requestData
+
+def getParamStr(data):
+	dataString = ''
+	if len(data) != 0:
+		for i,j in data.iteritems():
+			dataString += i + '=' +j
+			dataString += '&'
+	return dataString[:-1]
+
 def split_params(u, t):
 	return array_split(u, t)
 
@@ -42,15 +70,18 @@ def statusMatch(ignore, status_code):
 	else:
 		return True
 
-def requestor(url, parameter, header, agent, variance, proxy, ignore):
+def requestor(url, parameter, header, agent, variance, proxy, ignore, data):
 	headers = {}
 	post = {}
 	proxies = {}
+	providedData = {}
+	
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
 		proxies = getHeaderObj(proxy)
+	
 	for i in parameter:
 		newrl = url
 		post = {}
@@ -59,6 +90,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore):
 			newrl += '&' + i + '=' + BASE_paramValue
 		else:
 			newrl += '?' + i + '=' + BASE_paramValue
+		post.update(BASE_POSTdata)
 		try:	 
 			#GET parameter
 			g = requests.get(newrl, timeout=10, headers=header, 
@@ -100,30 +132,43 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore):
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-def getBase(url, header, agent, proxy):
+def getBase(url, header, agent, proxy, data):
 	headers = {}
 	proxies = {}
+	get = ''
+	url_base = ''
 	global BASE_GETstatus
 	global BASE_GETresponseSize	
 	global BASE_POSTstatus
 	global BASE_POSTresponseSize
+	global BASE_POSTdata
 	
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
 		proxies = getHeaderObj(proxy)
+	if '?' in url:
+		get = string.split(url, '?')[1]
+		url_base = string.split(url, '?')[0]
+	else:
+		url_base = url
+	
+	BASE_POSTdata = getParamObj(get)
+	if len(data) != 0:
+		BASE_POSTdata.update(getParamObj(data))
 	print 'Establishing base figures...'
+	print '\033[031mPOST data: \033[0m'+getParamStr(BASE_POSTdata)
 	try:
 		g = requests.get(url, timeout=10, headers=headers, verify=False,
-							proxies=proxies)
+							allow_redirects=False, proxies=proxies)
 		BASE_GETstatus = g.status_code
 		BASE_GETresponseSize = len(g.content)
 		print '\033[031mGET: content-length-> '+str(len(g.content)),
 		print ' status-> '+str(g.status_code)+'\033[0m'
 	
-		p = requests.post(url, timeout=10, headers=headers, verify=False,
-							proxies=proxies)
+		p = requests.post(url_base, timeout=10, headers=headers, verify=False,
+							allow_redirects=False, proxies=proxies, data=BASE_POSTdata)
 		BASE_POSTstatus = p.status_code
 		BASE_POSTresponseSize = len(p.content)
 		print '\033[031mPOST: content-length-> '+str(len(p.content)),
@@ -159,6 +204,8 @@ if __name__ == '__main__':
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
 	parse.add_argument('-x', '--ignore', type=str, default='',
 						help='Specify a status to ignore eg. 404,302...')
+	parse.add_argument('-d', '--data', type=str, default='', 
+						help='Provide default post data (also taken from provided url after ?)')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -170,7 +217,7 @@ if __name__ == '__main__':
 
 	if args.url:
 		version_info()
-		getBase(args.url, args.header, args.agent, args.proxy)
+		getBase(args.url, args.header, args.agent, args.proxy, args.data)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
@@ -182,7 +229,7 @@ if __name__ == '__main__':
 		for i in range(0, args.threads):
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
-				args.proxy, args.ignore))
+				args.proxy, args.ignore, args.data))
 			threads.append(p)
 		try:
 			for p in threads:
