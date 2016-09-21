@@ -7,7 +7,7 @@ to be passed an unknown parameter. This hopefully can help find them.
 
 ![example scan](http://makthepla.net/parameth/parameth.png)
 
-The **-o** flag allows you to specify an offset (helps with dynamic pages)
+The ***-off*** flag allows you to specify an offset (helps with dynamic pages)
 so for example, if you were getting alternating response sizes of 4444 and
 4448, set the offset to 5 and it will only show the stuff outside the norm
 
