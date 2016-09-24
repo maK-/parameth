@@ -42,12 +42,13 @@ so for example, if you were getting alternating response sizes of 4444 and
 
 >  -x IGNORE, --ignore IGNORE           **Specify a status to ignore eg. 404,302...**
 
-> -s SIZEIGNORE, --sizeignore SIZEIGNORE **Ignore responses of specified size**
+>  -s SIZEIGNORE, --sizeignore SIZEIGNORE **Ignore responses of specified size**
 
 >  -d DATA, --data DATA                 **Provide default post data (also taken from provided url after ?)**
 
->   -i IGMETH, --igmeth IGMETH			**Ignore GET or POST method. Specify g or p**
+>  -i IGMETH, --igmeth IGMETH			**Ignore GET or POST method. Specify g or p**
 
+>  -c COOKIE, --cookie COOKIE           **Specify Cookies**
 # Adding new params from source:
 
 The following regexes might be useful to parse `$_GET` or `$_POST` parameters from source:

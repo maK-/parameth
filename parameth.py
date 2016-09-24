@@ -28,11 +28,22 @@ def version_info():
 	print '\033[1;30m================================================\033[0m'
 
 def getHeaderObj(header):
+	h3 = {}
 	h1 = string.split(header, ':')[0]
-	h2 = h1+':'
-	h3 = string.split(header, h2)[1]
-	h2 = {h1:h3}
-	return h2
+	h2 = string.split(header, ':')[1]
+	h3[h1] = h2
+	return h3
+
+def getCookieObj(cookie):
+	cookies = {}
+	c1 = string.split(cookie, ':')[1]
+	c2 = string.split(c1, ';')
+	for i in c2:
+		if len(i) != 0:
+			c3 = string.split(i, '=')[0]
+			c4 = string.split(i, '=')[1]
+			cookies.update({c3:c4})
+	return cookies
 
 def getParamObj(data):
 	newParam = ''
@@ -76,12 +87,15 @@ def printOut(filename, string):
 	f.close()
 
 def requestor(url, parameter, header, agent, variance, proxy, 
-				ignore, data, out, size, igmeth):
+				ignore, data, out, size, igmeth, cookie):
 	headers = {}
 	post = {}
 	proxies = {}
 	providedData = {}
+	cookies = {}
 	
+	if ':' in cookie:
+		cookies = getCookieObj(cookie)
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
@@ -102,7 +116,8 @@ def requestor(url, parameter, header, agent, variance, proxy,
 			#GET parameter
 			if igmeth != 'g':
 				g = requests.get(newrl, timeout=10, headers=header, 
-					allow_redirects=False, verify=False, proxies=proxies)
+					allow_redirects=False, verify=False, proxies=proxies,
+					cookies=cookies)
 				plusvar = len(g.content) + variance
 				subvar = len(g.content) - variance
 
@@ -125,7 +140,8 @@ def requestor(url, parameter, header, agent, variance, proxy,
 			#POST parameter
 			if igmeth != 'p':
 				p = requests.post(url, timeout=10, headers=header, data=post,
-					allow_redirects=False, verify=False, proxies=proxies)
+					allow_redirects=False, verify=False, proxies=proxies,
+					cookies=cookies)
 				plusvar = len(p.content) + variance
 				subvar = len(p.content) - variance
 
@@ -153,9 +169,10 @@ def requestor(url, parameter, header, agent, variance, proxy,
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-def getBase(url, header, agent, variance, proxy, data, igmeth):
+def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 	headers = {}
 	proxies = {}
+	cookies = {}
 	get = ''
 	url_base = ''
 	global _GETstatus
@@ -164,6 +181,8 @@ def getBase(url, header, agent, variance, proxy, data, igmeth):
 	global _POSTresponseSize
 	global _POSTdata
 	
+	if ':' in cookie:
+		cookies = getCookieObj(cookie)
 	if ':' in header:
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
@@ -185,7 +204,8 @@ def getBase(url, header, agent, variance, proxy, data, igmeth):
 	try:
 		if igmeth != 'g':
 			g = requests.get(url, timeout=10, headers=headers, verify=False,
-								allow_redirects=False, proxies=proxies)
+								allow_redirects=False, proxies=proxies,
+								cookies=cookies)
 			_GETstatus = g.status_code
 			_GETresponseSize = len(g.content)
 			print '\033[031mGET: content-length->\033[0m '+str(len(g.content)),
@@ -194,7 +214,8 @@ def getBase(url, header, agent, variance, proxy, data, igmeth):
 		if igmeth != 'p':
 			p = requests.post(url_base, timeout=10, headers=headers, 
 								verify=False, allow_redirects=False, 
-								proxies=proxies, data=_POSTdata)
+								proxies=proxies, data=_POSTdata,
+								cookies=cookies)
 			_POSTstatus = p.status_code
 			_POSTresponseSize = len(p.content)
 			print '\033[031mPOST: content-length->\033[0m '+str(len(p.content)),
@@ -237,6 +258,8 @@ if __name__ == '__main__':
 						help='Provide default post data (also taken from provided url after ?)')
 	parse.add_argument('-i', '--igmeth', type=str, default='',
 						help='Ignore GET or POST method. Specify g or p')
+	parse.add_argument('-c', '--cookie', type=str, default='',
+						help='Specify Cookies')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -249,7 +272,7 @@ if __name__ == '__main__':
 	if args.url:
 		version_info()
 		getBase(args.url, args.header, args.agent, args.variance, args.proxy, 
-				args.data, args.igmeth)
+				args.data, args.igmeth, args.cookie)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
@@ -262,7 +285,7 @@ if __name__ == '__main__':
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
 				args.proxy, args.ignore, args.data, args.out, args.sizeignore,
-				args.igmeth))
+				args.igmeth, args.cookie))
 			threads.append(p)
 		try:
 			for p in threads:
