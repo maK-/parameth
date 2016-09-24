@@ -123,7 +123,7 @@ def requestor(url, parameter, header, agent, variance, proxy,
 		try:	 
 			#GET parameter
 			if igmeth != 'g':
-				g = requests.get(newrl, timeout=10, headers=header, 
+				g = requests.get(newrl, timeout=10, headers=headers, 
 					allow_redirects=False, verify=False, proxies=proxies,
 					cookies=cookies)
 				plusvar = len(g.content) + variance
@@ -147,7 +147,7 @@ def requestor(url, parameter, header, agent, variance, proxy,
 			
 			#POST parameter
 			if igmeth != 'p':
-				p = requests.post(url, timeout=10, headers=header, data=post,
+				p = requests.post(url, timeout=10, headers=headers, data=post,
 					allow_redirects=False, verify=False, proxies=proxies,
 					cookies=cookies)
 				plusvar = len(p.content) + variance
