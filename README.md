@@ -46,7 +46,7 @@ so for example, if you were getting alternating response sizes of 4444 and
 
 >  -d DATA, --data DATA                 **Provide default post data (also taken from provided url after ?)**
 
-
+>   -i IGMETH, --igmeth IGMETH			**Ignore GET or POST method. Specify g or p**
 
 # Adding new params from source:
 
