@@ -34,12 +34,20 @@ def getHeaderObj(header):
 	h3[h1] = h2
 	return h3
 
+def getProxyObj(proxy):
+	proxies = {}
+	if 'https://' in proxy:
+		proxies['https'] = string.split(proxy, 'https://')[1]
+	else:
+		proxies['http'] = string.split(proxy, 'http://')[1]
+	return proxies
+
 def getCookieObj(cookie):
 	cookies = {}
 	c1 = string.split(cookie, ':')[1]
 	c2 = string.split(c1, ';')
 	for i in c2:
-		if len(i) != 0:
+		if len(i) >= 2:
 			c3 = string.split(i, '=')[0]
 			c4 = string.split(i, '=')[1]
 			cookies.update({c3:c4})
@@ -100,8 +108,11 @@ def requestor(url, parameter, header, agent, variance, proxy,
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
-		proxies = getHeaderObj(proxy)
-	
+		proxies = getProxyObj(proxy)
+	print headers
+	print cookies 
+	print proxies	
+
 	for i in parameter:
 		newrl = url
 		strvar = ''
@@ -187,12 +198,15 @@ def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 		headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
-		proxies = getHeaderObj(proxy)
+		proxies = getProxyObj(proxy)
 	if '?' in url:
 		get = string.split(url, '?')[1]
 		url_base = string.split(url, '?')[0]
 	else:
 		url_base = url
+	print headers
+	print cookies
+	print proxies
 	
 	_POSTdata = getParamObj(get)
 	if len(data) != 0:
