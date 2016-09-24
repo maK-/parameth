@@ -109,9 +109,6 @@ def requestor(url, parameter, header, agent, variance, proxy,
 	headers['User-agent'] = agent
 	if ':' in proxy:
 		proxies = getProxyObj(proxy)
-	print headers
-	print cookies 
-	print proxies	
 
 	for i in parameter:
 		newrl = url
@@ -204,9 +201,6 @@ def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 		url_base = string.split(url, '?')[0]
 	else:
 		url_base = url
-	print headers
-	print cookies
-	print proxies
 	
 	_POSTdata = getParamObj(get)
 	if len(data) != 0:
