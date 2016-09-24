@@ -16,8 +16,8 @@ so for example, if you were getting alternating response sizes of 4444 and
 
 >***usage: parameth.py [-h] [-v] [-u URL] [-p PARAMS] [-H HEADER] [-a AGENT]
 >                   [-t THREADS] [-off VARIANCE] [-o OUT] [-P PROXY]
->                   [-x IGNORE] [-d DATA]***
-
+>                   [-x IGNORE] [-s SIZEIGNORE] [-d DATA] [-i IGMETH]
+>                   [-c COOKIE]***
 >**optional arguments:**
 
 >  -h, --help                           **show this help message and exit**

@@ -16,7 +16,7 @@ _POSTdata = {}
 _paramValue = 'discobiscuits'
 
 def version_info():
-	VER = 'parameth v1.0 - \033[033mfind parameters and craic rocks\033[0m'
+	VER = 'parameth v1.337 - \033[033mfind parameters and craic rocks\033[0m'
 	AUTH = 'Author: \033[033mCiaran McNally - https://makthepla.net\033[0m'
 	print '\033[1;34m                                       |   |'
 	print '  __ \\   _` |  __| _` | __ `__ \\   _ \\ __| __ \\'
