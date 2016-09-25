@@ -5,6 +5,7 @@ import argparse
 import requests
 import sys
 import string
+import time
 from numpy import array_split
 
 requests.packages.urllib3.disable_warnings()
@@ -94,8 +95,8 @@ def printOut(filename, string):
 	f.write(string+'\n')
 	f.close()
 
-def requestor(url, parameter, header, agent, variance, proxy, 
-				ignore, data, out, size, igmeth, cookie):
+def requestor(url, parameter, header, agent, variance, proxy, ignore, 
+				data, out, size, igmeth, cookie, timeout):
 	headers = {}
 	post = {}
 	proxies = {}
@@ -111,6 +112,7 @@ def requestor(url, parameter, header, agent, variance, proxy,
 		proxies = getProxyObj(proxy)
 
 	for i in parameter:
+		time.sleep(timeout)
 		newrl = url
 		strvar = ''
 		post = {}
@@ -266,8 +268,9 @@ if __name__ == '__main__':
 						help='Provide default post data (also taken from provided url after ?)')
 	parse.add_argument('-i', '--igmeth', type=str, default='',
 						help='Ignore GET or POST method. Specify g or p')
-	parse.add_argument('-c', '--cookie', type=str, default='',
-						help='Specify Cookies')
+	parse.add_argument('-c', '--cookie', type=str, default='', help='Specify Cookies')
+	parse.add_argument('-T', '--timeout', type=int, default=0, 
+						help='Specify a timeout in seconds to wait between each request')
 	args = parse.parse_args()
 
 	if len(sys.argv) <= 1:
@@ -293,7 +296,7 @@ if __name__ == '__main__':
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
 				args.proxy, args.ignore, args.data, args.out, args.sizeignore,
-				args.igmeth, args.cookie))
+				args.igmeth, args.cookie, args.timeout))
 			threads.append(p)
 		try:
 			for p in threads:

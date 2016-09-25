@@ -49,6 +49,10 @@ so for example, if you were getting alternating response sizes of 4444 and
 >  -i IGMETH, --igmeth IGMETH			**Ignore GET or POST method. Specify g or p**
 
 >  -c COOKIE, --cookie COOKIE           **Specify Cookies**
+
+>  -T TIMEOUT, --timeout TIMEOUT		**Specify a timeout in seconds to wait between each request**
+
+
 # Adding new params from source:
 
 The following regexes might be useful to parse `$_GET` or `$_POST` parameters from source:
