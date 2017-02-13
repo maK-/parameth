@@ -5,7 +5,7 @@ Often when you are busting a directory for common files,
 you can identify scripts (for example test.php) that look like they need
 to be passed an unknown parameter. This hopefully can help find them.
 
-![example scan](http://makthepla.net/parameth/parameth.png)
+![example scan](https://pbs.twimg.com/media/CsHJsjsXEAAOgxK.jpg)
 
 The ***-off*** flag allows you to specify an offset (helps with dynamic pages)
 so for example, if you were getting alternating response sizes of 4444 and
