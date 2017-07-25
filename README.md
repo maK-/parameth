@@ -15,9 +15,13 @@ so for example, if you were getting alternating response sizes of 4444 and
 #Usage
 
 >***usage: parameth.py [-h] [-v] [-u URL] [-p PARAMS] [-H HEADER] [-a AGENT]
+
 >                   [-t THREADS] [-off VARIANCE] [-o OUT] [-P PROXY]
+
 >                   [-x IGNORE] [-s SIZEIGNORE] [-d DATA] [-i IGMETH]
+
 >                   [-c COOKIE]***
+
 >**optional arguments:**
 
 >  -h, --help                           **show this help message and exit**
@@ -35,6 +39,8 @@ so for example, if you were getting alternating response sizes of 4444 and
 >  -t THREADS, --threads THREADS        **Specify the number of threads.**
 
 >  -off VARIANCE, --variance VARIANCE   **The offset in difference to ignore (if dynamic pages)**
+
+>  -diff DIFFERENCE, --difference DIFFERENCE   **Percentage difference in response (recommended 95)**
 
 >  -o OUT, --out OUT                    **Specify output file**
 
