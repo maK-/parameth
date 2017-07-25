@@ -9,7 +9,9 @@ import time
 from numpy import array_split
 from fuzzywuzzy import fuzz
 
+#If request errors are displaying just comment line below
 requests.packages.urllib3.disable_warnings()
+#########################################################
 _GETstatus = 0
 _GETresponse = ''
 _GETresponseSize = 0
@@ -213,7 +215,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-def getBase(url, header, agent, variance, proxy, data, igmeth, cookie, diff):
+def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 	headers = {}
 	proxies = {}
 	cookies = {}
@@ -323,7 +325,7 @@ if __name__ == '__main__':
 	if args.url:
 		version_info()
 		getBase(args.url, args.header, args.agent, args.variance, args.proxy, 
-				args.data, args.igmeth, args.cookie, args.difference)
+				args.data, args.igmeth, args.cookie)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
