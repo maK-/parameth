@@ -7,11 +7,14 @@ import sys
 import string
 import time
 from numpy import array_split
+from fuzzywuzzy import fuzz
 
 requests.packages.urllib3.disable_warnings()
 _GETstatus = 0
+_GETresponse = ''
 _GETresponseSize = 0
 _POSTstatus = 0
+_POSTresponse = ''
 _POSTresponseSize = 0
 _POSTdata = {}
 _paramValue = 'discobiscuits'
@@ -90,13 +93,17 @@ def statusMatch(ignore, status_code):
 	else:
 		return True
 
+def percentDiff(old, new):
+	x = fuzz.ratio(old, new)
+	return x
+
 def printOut(filename, string):
 	f = open(filename,'a')
 	f.write(string+'\n')
 	f.close()
 
 def requestor(url, parameter, header, agent, variance, proxy, ignore, 
-				data, out, size, igmeth, cookie, timeout):
+				data, out, size, igmeth, cookie, timeout, diff):
 	headers = {}
 	post = {}
 	proxies = {}
@@ -115,12 +122,17 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 		time.sleep(timeout)
 		newrl = url
 		strvar = ''
+		ignorecontent = ''
+		gdiff = 100
+		pdiff = 100
 		post = {}
 		post[i] = _paramValue
 		if '?' in url:
-			newrl += '&' + i + '=' + _paramValue
+			ignorecontent = '&' + i + '=' + _paramValue
+			newrl += ignorecontent
 		else:
-			newrl += '?' + i + '=' + _paramValue
+			ignorecontent = '?' + i + '=' + _paramValue
+			newrl += ignorecontent
 		post.update(_POSTdata)
 		try:	 
 			#GET parameter
@@ -128,8 +140,10 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 				g = requests.get(newrl, timeout=10, headers=headers, 
 					allow_redirects=False, verify=False, proxies=proxies,
 					cookies=cookies)
-				plusvar = len(g.content) + variance
-				subvar = len(g.content) - variance
+				#Calculating GET size - params
+				gcontent = g.content.replace(ignorecontent, '')
+				plusvar = len(gcontent) + variance
+				subvar = len(gcontent) - variance
 
 				if g.status_code != _GETstatus and statusMatch(ignore, str(g.status_code)):
 					print '\033[032mGET(status)\033[0m: '+i+' | '+str(_GETstatus)+'->',
@@ -139,21 +153,32 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 						printOut(out, strvar)
 			
 				if statusMatch(ignore, str(g.status_code)):
-					if len(g.content) != _GETresponseSize and len(g.content) != size:
-						if len(g.content) >= plusvar or len(g.content) <= subvar:
+					if len(gcontent) != _GETresponseSize and len(gcontent) != size:
+						if len(gcontent) >= plusvar or len(gcontent) <= subvar:
 							print '\033[032mGET(size)\033[0m: '+i+' | '+str(_GETresponseSize),
-							print '->' +str(len(g.content))+ ' ( '+newrl+' )'
+							print '->' +str(len(gcontent))+ ' ( '+newrl+' )'
 							if out != 'out':
-								strvar = 'GET(size) '+i+' '+str(len(g.content))+' '+newrl
+								strvar = 'GET(size) '+i+' '+str(len(gcontent))+' '+newrl
 								printOut(out, strvar)
+
+				gdiff = percentDiff(_GETresponse, gcontent)
+				if diff != 100 and diff < 100:
+					if gdiff < diff:
+						print '\033[032mGET(DIFF)\033[0m: '+i+' | '+str(diff),
+						print '->' +str(gdiff)+ ' ( '+newrl+' )'
+						if out != 'out':
+							strvar = 'GET(diff) '+i+' '+str(gdiff)+' '+newrl
+							printOut(out, strvar)
 			
 			#POST parameter
 			if igmeth != 'p':
 				p = requests.post(url, timeout=10, headers=headers, data=post,
 					allow_redirects=False, verify=False, proxies=proxies,
 					cookies=cookies)
-				plusvar = len(p.content) + variance
-				subvar = len(p.content) - variance
+				#calculating POST size - params
+				pcontent = p.content.replace(ignorecontent, '')
+				plusvar = len(pcontent) + variance
+				subvar = len(pcontent) - variance
 
 				if p.status_code != _POSTstatus and statusMatch(ignore, str(p.status_code)):
 					print '\033[032mPOST(status)\033[0m: '+i+' | '+str(_POSTstatus)+'->',
@@ -163,13 +188,22 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 						printOut(out, strvar)
 			
 				if statusMatch(ignore, str(p.status_code)):
-					if len(p.content) != _POSTresponseSize and len(p.content) != size:
-						if len(p.content) >= plusvar or len(p.content) <= subvar:
+					if len(pcontent) != _POSTresponseSize and len(pcontent) != size:
+						if len(pcontent) >= plusvar or len(pcontent) <= subvar:
 							print '\033[032mPOST(size)\033[0m: '+i+' | '+str(_POSTresponseSize),
-							print '->' +str(len(p.content))+ ' ( '+url+' )'
+							print '->' +str(len(pcontent))+ ' ( '+url+' )'
 							if out != 'out':
-								strvar = 'POST(size) '+i+' '+str(len(p.content))+' '+url
+								strvar = 'POST(size) '+i+' '+str(len(pcontent))+' '+url
 								printOut(out, strvar)
+
+				pdiff = percentDiff(_POSTresponse, pcontent)
+				if diff != 100 and diff < 100:
+					if pdiff < diff:
+						print '\033[032mPOST(DIFF)\033[0m: '+i+' | '+str(diff),
+						print '->' +str(pdiff)+ ' ( '+newrl+' )'
+						if out != 'out':
+							strvar = 'GET(diff) '+i+' '+str(pdiff)+' '+newrl
+							printOut(out, strvar)
 
 		except requests.exceptions.Timeout:
 			print 'Request Timed out on parameter "'+i+'"'
@@ -179,15 +213,17 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 			print 'Redirect loop on parameter "'+i+'"'		
 	
 
-def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
+def getBase(url, header, agent, variance, proxy, data, igmeth, cookie, diff):
 	headers = {}
 	proxies = {}
 	cookies = {}
 	get = ''
 	url_base = ''
 	global _GETstatus
+	global _GETresponse
 	global _GETresponseSize	
 	global _POSTstatus
+	global _POSTresponse
 	global _POSTresponseSize
 	global _POSTdata
 	
@@ -217,6 +253,7 @@ def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 								allow_redirects=False, proxies=proxies,
 								cookies=cookies)
 			_GETstatus = g.status_code
+			_GETresponse = g.content
 			_GETresponseSize = len(g.content)
 			print '\033[031mGET: content-length->\033[0m '+str(len(g.content)),
 			print '\033[031m status->\033[0m '+str(g.status_code)
@@ -227,6 +264,7 @@ def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 								proxies=proxies, data=_POSTdata,
 								cookies=cookies)
 			_POSTstatus = p.status_code
+			_POSTresponse = p.content
 			_POSTresponseSize = len(p.content)
 			print '\033[031mPOST: content-length->\033[0m '+str(len(p.content)),
 			print '\033[031m status->\033[0m '+str(p.status_code)
@@ -257,6 +295,8 @@ if __name__ == '__main__':
 						help='Specify the number of threads.')
 	parse.add_argument('-off', '--variance', type=int, default='0',
 						help='The offset in difference to ignore (if dynamic pages)')
+	parse.add_argument('-diff', '--difference', type=int, default='100',
+						help='Percentage difference in response (recommended 95)')
 	parse.add_argument('-o', '--out', type=str, default='out',help='Specify output file')
 	parse.add_argument('-P', '--proxy', type=str, default='',
 						help='Specify a proxy in the form http|s://[IP]:[PORT]')
@@ -283,7 +323,7 @@ if __name__ == '__main__':
 	if args.url:
 		version_info()
 		getBase(args.url, args.header, args.agent, args.variance, args.proxy, 
-				args.data, args.igmeth, args.cookie)
+				args.data, args.igmeth, args.cookie, args.difference)
 		print 'Scanning it like you own it...'	
 		try:
 			with open(args.params, "r") as f:
@@ -296,7 +336,7 @@ if __name__ == '__main__':
 			p = multiprocessing.Process(target=requestor, args=(args.url,
 				splitlist[i], args.header, args.agent, args.variance, 
 				args.proxy, args.ignore, args.data, args.out, args.sizeignore,
-				args.igmeth, args.cookie, args.timeout))
+				args.igmeth, args.cookie, args.timeout, args.difference))
 			threads.append(p)
 		try:
 			for p in threads:
