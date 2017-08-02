@@ -164,8 +164,8 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 								printOut(out, strvar)
 
 				gdiff = percentDiff(_GETresponse, gcontent)
-				if diff != 100 or diff != 0 and diff < 100:
-					if gdiff < diff:
+				if diff != 100 and diff < 100:
+					if gdiff < diff and gdiff != 0:
 						print '\033[032mGET(DIFF)\033[0m: '+i+' | '+str(diff),
 						print '->' +str(gdiff)+ ' ( '+newrl+' )'
 						if out != 'out':
@@ -199,8 +199,8 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 								printOut(out, strvar)
 
 				pdiff = percentDiff(_POSTresponse, pcontent)
-				if diff != 100 or diff != 0 and diff < 100:
-					if pdiff < diff:
+				if diff != 100 and diff < 100:
+					if pdiff < diff and gdiff !=0:
 						print '\033[032mPOST(DIFF)\033[0m: '+i+' | '+str(diff),
 						print '->' +str(pdiff)+ ' ( '+newrl+' )'
 						if out != 'out':
