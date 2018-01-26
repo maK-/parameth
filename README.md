@@ -11,53 +11,56 @@ The ***-off*** flag allows you to specify an offset (helps with dynamic pages)
 so for example, if you were getting alternating response sizes of 4444 and
 4448, set the offset to 5 and it will only show the stuff outside the norm
 
+# Installation
 
-#Usage
+```shell
+virtualenv venv
+. ./venv/bin/activate
+pip install -u -r requirements.txt
+```
 
->***usage: parameth.py [-h] [-v] [-u URL] [-p PARAMS] [-H HEADER] [-a AGENT]
 
->                   [-t THREADS] [-off VARIANCE] [-o OUT] [-P PROXY]
+# Usage
 
->                   [-x IGNORE] [-s SIZEIGNORE] [-d DATA] [-i IGMETH]
+```
+usage: parameth.py [-h] [-v] [-u URL] [-p PARAMS] [-H HEADER] [-a AGENT]
+                   [-t THREADS] [-off VARIANCE] [-diff DIFFERENCE] [-o OUT]
+                   [-P PROXY] [-x IGNORE] [-s SIZEIGNORE] [-d DATA]
+                   [-i IGMETH] [-c COOKIE] [-T TIMEOUT]
 
->                   [-c COOKIE]***
-
->**optional arguments:**
-
->  -h, --help                           **show this help message and exit**
-
->  -v, --version                        **Version Information**
-
->  -u URL, --url URL                    **Target URL**
-
->  -p PARAMS, --params PARAMS           **Provide a list of parameters to scan for**
-
->  -H HEADER, --header HEADER           **Add a custom header to the requests**
-
->  -a AGENT, --agent AGENT              **Specify a user agent**
-
->  -t THREADS, --threads THREADS        **Specify the number of threads.**
-
->  -off VARIANCE, --variance VARIANCE   **The offset in difference to ignore (if dynamic pages)**
-
->  -diff DIFFERENCE, --difference DIFFERENCE   **Percentage difference in response (recommended 95)**
-
->  -o OUT, --out OUT                    **Specify output file**
-
->  -P PROXY, --proxy PROXY              **Specify a proxy in the form http|s://[IP]:[PORT]**
-
->  -x IGNORE, --ignore IGNORE           **Specify a status to ignore eg. 404,302...**
-
->  -s SIZEIGNORE, --sizeignore SIZEIGNORE **Ignore responses of specified size**
-
->  -d DATA, --data DATA                 **Provide default post data (also taken from provided url after ?)**
-
->  -i IGMETH, --igmeth IGMETH			**Ignore GET or POST method. Specify g or p**
-
->  -c COOKIE, --cookie COOKIE           **Specify Cookies**
-
->  -T TIMEOUT, --timeout TIMEOUT		**Specify a timeout in seconds to wait between each request**
-
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --version         Version Information
+  -u URL, --url URL     Target URL
+  -p PARAMS, --params PARAMS
+                        Provide a list of parameters to scan for
+  -H HEADER, --header HEADER
+                        Add a custom header to the requests
+  -a AGENT, --agent AGENT
+                        Specify a user agent
+  -t THREADS, --threads THREADS
+                        Specify the number of threads.
+  -off VARIANCE, --variance VARIANCE
+                        The offset in difference to ignore (if dynamic pages)
+  -diff DIFFERENCE, --difference DIFFERENCE
+                        Percentage difference in response (recommended 95)
+  -o OUT, --out OUT     Specify output file
+  -P PROXY, --proxy PROXY
+                        Specify a proxy in the form http|s://[IP]:[PORT]
+  -x IGNORE, --ignore IGNORE
+                        Specify a status to ignore eg. 404,302...
+  -s SIZEIGNORE, --sizeignore SIZEIGNORE
+                        Ignore responses of specified size
+  -d DATA, --data DATA  Provide default post data (also taken from provided
+                        url after ?)
+  -i IGMETH, --igmeth IGMETH
+                        Ignore GET or POST method. Specify g or p
+  -c COOKIE, --cookie COOKIE
+                        Specify Cookies
+  -T TIMEOUT, --timeout TIMEOUT
+                        Specify a timeout in seconds to wait between each
+                        request
+```
 
 # Adding new params from source:
 
