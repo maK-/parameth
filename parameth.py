@@ -52,11 +52,12 @@ def getCookieObj(cookie):
 	cookies = {}
 	c1 = string.split(cookie, ':')[1]
 	c2 = string.split(c1, ';')
-	for i in c2:
-		if len(i) >= 2:
-			c3 = string.split(i, '=')[0]
-			c4 = string.split(i, '=')[1]
-			cookies.update({c3:c4})
+	if len(c2) >= 2:
+		for i in c2:
+			if len(i) >= 2:
+				c3 = string.split(i, '=')[0]
+				c4 = string.split(i, '=')[1]
+				cookies.update({c3:c4})
 	return cookies
 
 def getParamObj(data):
