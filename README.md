@@ -35,7 +35,7 @@ optional arguments:
   -p PARAMS, --params PARAMS
                         Provide a list of parameters to scan for
   -H HEADER, --header HEADER
-                        Add a custom header to the requests
+                        Add headers in format a:b c:d
   -a AGENT, --agent AGENT
                         Specify a user agent
   -t THREADS, --threads THREADS
