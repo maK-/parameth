@@ -33,12 +33,17 @@ def version_info():
 	print AUTH
 	print '\033[1;30m================================================\033[0m'
 
-def getHeaderObj(header):
-	h3 = {}
-	h1 = string.split(header, ':')[0]
-	h2 = string.split(header, ':')[1]
-	h3[h1] = h2
-	return h3
+def getHeaderObj(headers):
+        newh = {}
+        if headers != None:
+            for i in headers:
+                try:
+                    key = i.split(':')[0]
+                    value = i.split(':')[1]
+                    newh[key.strip()] = value.strip()
+                except IndexError:
+                    print('Wrong header format detected: '+str(i))
+        return newh
 
 def getProxyObj(proxy):
 	proxies = {}
@@ -114,8 +119,7 @@ def requestor(url, parameter, header, agent, variance, proxy, ignore,
 	
 	if ':' in cookie:
 		cookies = getCookieObj(cookie)
-	if ':' in header:
-		headers = getHeaderObj(header)
+	headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
 		proxies = getProxyObj(proxy)
@@ -231,8 +235,7 @@ def getBase(url, header, agent, variance, proxy, data, igmeth, cookie):
 	
 	if ':' in cookie:
 		cookies = getCookieObj(cookie)
-	if ':' in header:
-		headers = getHeaderObj(header)
+	headers = getHeaderObj(header)
 	headers['User-agent'] = agent
 	if ':' in proxy:
 		proxies = getProxyObj(proxy)
@@ -289,8 +292,8 @@ if __name__ == '__main__':
 	parse.add_argument('-u', '--url', type=str, default='', help='Target URL')
 	parse.add_argument('-p', '--params', type=str, default='lists/all.txt',
 						help='Provide a list of parameters to scan for')
-	parse.add_argument('-H', '--header', type=str, default='', 
-						help='Add a custom header to the requests')
+	parse.add_argument('-H', '--header', nargs='+', 
+                                                help='Add headers in format a:b c:d')
 	parse.add_argument('-a', '--agent', type=str, default='parameth v1.0',
 						help='Specify a user agent')
 	parse.add_argument('-t', '--threads', type=int, default='2',
