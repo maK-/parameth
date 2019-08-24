@@ -19,6 +19,27 @@ virtualenv venv
 pip install -u -r requirements.txt
 ```
 
+## Docker
+
+If you don't want to install dependencies on your machine, you could just use docker. 
+
+```shell
+cd /path/to/parameth
+docker build -t parameth .
+docker run -it --rm --name parameth1 parameth
+``` 
+
+You can also create a shell script instead of running `docker run` all the time: 
+
+`vim /usr/bin/parameth`
+
+```shell
+#!/bin/bash
+docker run -it --rm --name parameth1 $@
+```
+
+`chmod +x /usr/bin/parameth`
+
 
 # Usage
 
